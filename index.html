@@ -3,65 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <title>Feliz Año Nuevo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Firebase SDK -->
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-  // 🔥 Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDynXjx8g9eS57cLZkV8Z_9hAf-khiCyM8",
-    authDomain: "hnyear-180e8.firebaseapp.com",
-    projectId: "hnyear-180e8",
-    storageBucket: "hnyear-180e8.firebasestorage.app",
-    messagingSenderId: "686162511594",
-    appId: "1:686162511594:web:5b319fbfc782a44201b993",
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.addName = async function () {
-    const input = document.getElementById('nameInput');
-    const name = input.value.trim();
-
-    if (!name) {
-      alert('Por favor escribe tu nombre');
-      return;
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1e3c72, #0f2027);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #ffffff;
     }
 
-    await addDoc(collection(db, 'nombres'), {
-      nombre: name,
-      fecha: serverTimestamp()
-    });
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
 
-    input.value = '';
-    showNames();
-  }
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
 
-  window.showNames = async function () {
-    document.getElementById('page1').style.display = 'none';
-    document.getElementById('page2').style.display = 'block';
+    p {
+      opacity: 0.9;
+    }
 
-    const list = document.getElementById('nameList');
-    list.innerHTML = '';
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
 
-    const q = query(collection(db, 'nombres'), orderBy('fecha', 'desc'));
-    const snapshot = await getDocs(q);
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: #003049;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-    snapshot.forEach(doc => {
-      const li = document.createElement('li');
-      li.textContent = doc.data().nombre;
-      list.appendChild(li);
-    });
-  }
+    button:hover {
+      opacity: 0.9;
+    }
 
-  window.goBack = function () {
-    document.getElementById('page2').style.display = 'none';
-    document.getElementById('page1').style.display = 'block';
-  }
-</script>
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    li {
+      background: rgba(255,255,255,0.18);
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="page1">
+    <h1>🎉 Te deseo un feliz año nuevo 🎉</h1>
+    <p>Escribe tu nombre y sé parte de esta nueva historia</p>
+    <input id="nameInput" type="text" placeholder="Tu nombre" />
+    <button onclick="addName()">Aceptar</button>
+  </div>
+
+  <div class="card" id="page2" style="display:none;">
+    <h1>✨ Personas que estuvieron conmigo en el 2025 ✨</h1>
+    <ul id="nameList"></ul>
+    <button onclick="goBack()">Agregar otro nombre</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDynXjx8g9eS57cLZkV8Z_9hAf-khiCyM8",
+      authDomain: "hnyear-180e8.firebaseapp.com",
+      projectId: "hnyear-180e8",
+      storageBucket: "hnyear-180e8.firebasestorage.app",
+      messagingSenderId: "686162511594",
+      appId: "1:686162511594:web:5b319fbfc782a44201b993",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addName = async () => {
+      const input = document.getElementById('nameInput');
+      const name = input.value.trim();
+
+      if (!name) {
+        alert('Por favor escribe tu nombre');
+        return;
+      }
+
+      await addDoc(collection(db, 'nombres'), {
+        nombre: name,
+        fecha: serverTimestamp(),
+      });
+
+      input.value = '';
+      showNames();
+    };
+
+    window.showNames = async () => {
+      document.getElementById('page1').style.display = 'none';
+      document.getElementById('page2').style.display = 'block';
+
+      const list = document.getElementById('nameList');
+      list.innerHTML = '';
+
+      const q = query(collection(db, 'nombres'), orderBy('fecha', 'desc'));
+      const snap = await getDocs(q);
+
+      snap.forEach(doc => {
+        const li = document.createElement('li');
+        li.textContent = doc.data().nombre;
+        list.appendChild(li);
+      });
+    };
+
+    window.goBack = () => {
+      document.getElementById('page2').style.display = 'none';
+      document.getElementById('page1').style.display = 'block';
+    };
+  </script>
 
 </body>
 </html>
