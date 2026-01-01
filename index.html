@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feliz Año Nuevo</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  // 🔥 Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDynXjx8g9eS57cLZkV8Z_9hAf-khiCyM8",
+    authDomain: "hnyear-180e8.firebaseapp.com",
+    projectId: "hnyear-180e8",
+    storageBucket: "hnyear-180e8.firebasestorage.app",
+    messagingSenderId: "686162511594",
+    appId: "1:686162511594:web:5b319fbfc782a44201b993",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.addName = async function () {
+    const input = document.getElementById('nameInput');
+    const name = input.value.trim();
+
+    if (!name) {
+      alert('Por favor escribe tu nombre');
+      return;
+    }
+
+    await addDoc(collection(db, 'nombres'), {
+      nombre: name,
+      fecha: serverTimestamp()
+    });
+
+    input.value = '';
+    showNames();
+  }
+
+  window.showNames = async function () {
+    document.getElementById('page1').style.display = 'none';
+    document.getElementById('page2').style.display = 'block';
+
+    const list = document.getElementById('nameList');
+    list.innerHTML = '';
+
+    const q = query(collection(db, 'nombres'), orderBy('fecha', 'desc'));
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach(doc => {
+      const li = document.createElement('li');
+      li.textContent = doc.data().nombre;
+      list.appendChild(li);
+    });
+  }
+
+  window.goBack = function () {
+    document.getElementById('page2').style.display = 'none';
+    document.getElementById('page1').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
